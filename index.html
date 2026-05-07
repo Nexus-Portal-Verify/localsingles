@@ -102,104 +102,6 @@
             100% { transform: translateY(-100vh) scale(0); opacity: 0; }
         }
 
-        /* Device warning overlay */
-        .device-warning {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 15, 30, 0.95);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .device-warning.active {
-            display: flex;
-        }
-
-        .warning-content {
-            background: linear-gradient(135deg, var(--color-white) 0%, #F5F5FF 100%);
-            border-radius: 40px;
-            padding: clamp(32px, 8vw, 48px);
-            text-align: center;
-            width: 100%;
-            max-width: 360px;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: var(--shadow-lg);
-            border: 3px solid var(--color-cyan);
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.3) rotate(-20deg); opacity: 0; }
-            60% { transform: scale(1.1); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .warning-icon {
-            font-size: clamp(40px, 12vw, 60px);
-            margin-bottom: clamp(12px, 3vw, 20px);
-            animation: iconBounce 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
-            display: block;
-        }
-
-        @keyframes iconBounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-15px) scale(1.15); }
-        }
-
-        .warning-content h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(20px, 6vw, 32px);
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-purple) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: clamp(8px, 2vw, 16px);
-            line-height: 1.2;
-        }
-
-        .warning-content p {
-            color: #666;
-            font-size: clamp(13px, 4vw, 16px);
-            line-height: 1.6;
-            margin-bottom: clamp(16px, 4vw, 24px);
-        }
-
-        .qr-placeholder {
-            width: clamp(120px, 30vw, 160px);
-            height: clamp(120px, 30vw, 160px);
-            background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%) -10px 0,
-                        linear-gradient(-45deg, #f0f0f0 25%, transparent 25%) -10px 0;
-            background-size: 20px 20px;
-            background-color: var(--color-white);
-            border: 3px dashed #ddd;
-            border-radius: 20px;
-            margin: clamp(16px, 4vw, 24px) auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(10px, 3vw, 14px);
-            color: #999;
-            animation: qrPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes qrPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.2), inset 0 0 10px rgba(124, 58, 237, 0.1); }
-            50% { box-shadow: 0 0 0 15px rgba(124, 58, 237, 0), inset 0 0 20px rgba(124, 58, 237, 0.2); }
-        }
-
         /* Main container */
         .container {
             width: 100%;
@@ -712,29 +614,6 @@
             }
         }
 
-        /* Desktop/Tablet blocker */
-        @media (min-width: 769px) {
-            body {
-                background: linear-gradient(-45deg, #0F0F1E, #1a1a2e, #2d2d4d, #3d3d5c);
-            }
-
-            body::before {
-                background: none;
-            }
-
-            .device-warning {
-                display: flex !important;
-            }
-
-            .container {
-                display: none;
-            }
-
-            .footer {
-                display: none;
-            }
-        }
-
         /* Print styles */
         @media print {
             body, .container, .footer { display: none; }
@@ -744,17 +623,6 @@
 <body>
     <!-- Bubble particles -->
     <div id="bubbleContainer"></div>
-
-    <!-- Device Warning Overlay -->
-    <div class="device-warning active" id="deviceWarning">
-        <div class="warning-content">
-            <div class="warning-icon">🔒</div>
-            <h2>Access Denied</h2>
-            <p>This exclusive community is only accessible via Mobile Devices (iOS/Android) for security reasons.</p>
-            <div class="qr-placeholder">📱 QR</div>
-            <p style="color: #999; font-size: clamp(11px, 3vw, 13px); margin-top: 8px;">Scan with your phone or visit on mobile</p>
-        </div>
-    </div>
 
     <!-- Main Quiz Container -->
     <div class="container">
@@ -895,6 +763,7 @@
         // ===== CREATE BUBBLE PARTICLES =====
         function createBubbles() {
             const container = document.getElementById('bubbleContainer');
+            if (!container) return;
             const colors = ['#FF1493', '#00D4FF', '#FFD700', '#FF6B35', '#00FF88'];
             const bubbleCount = Math.random() > 0.5 ? 5 : 10;
 
@@ -923,192 +792,34 @@
         setInterval(createBubbles, 2000);
         createBubbles();
 
-        // ===== DEVICE DETECTION =====
-        function checkDeviceType() {
-            const userAgent = navigator.userAgent;
-            return /Android|iPhone|iPad/i.test(userAgent);
-        }
-
-        // ===== HAPTIC FEEDBACK =====
-        function triggerHaptic(pattern = 'light') {
-            if (navigator.vibrate) {
-                const patterns = {
-                    light: [10],
-                    success: [10, 50, 10],
-                    heavy: [30, 10, 30]
-                };
-                navigator.vibrate(patterns[pattern] || patterns.light);
-            }
-        }
-
-        // ===== CONFETTI EFFECT =====
-        function createConfetti() {
-            const colors = ['#FF1493', '#00D4FF', '#FFD700', '#FF6B35', '#00FF88'];
-            
-            for (let i = 0; i < 30; i++) {
-                const confetti = document.createElement('div');
-                const left = Math.random() * 100;
-                const delay = Math.random() * 0.4;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const size = Math.random() * 10 + 4;
-
-                confetti.style.cssText = `
-                    position: fixed;
-                    left: ${left}%;
-                    top: -20px;
-                    width: ${size}px;
-                    height: ${size}px;
-                    background: ${color};
-                    border-radius: 50%;
-                    opacity: 0.9;
-                    pointer-events: none;
-                    z-index: 999;
-                    animation: confettiFall ${Math.random() * 1.5 + 1.5}s ease-in ${delay}s forwards;
-                    box-shadow: 0 0 ${size + 2}px ${color};
-                `;
-
-                document.body.appendChild(confetti);
-            }
-
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes confettiFall {
-                    to {
-                        transform: translateY(100vh) rotate(720deg);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-
-            setTimeout(() => {
-                document.querySelectorAll('[style*="confettiFall"]').forEach(el => el.remove());
-            }, 3500);
-        }
-
-        // ===== BUTTON HANDLER =====
-        function handleAnswer(button) {
-            if (isProcessing) return;
-            
-            triggerHaptic('success');
-            isProcessing = true;
-
-            const answerValue = button.getAttribute('data-answer');
-            answers[`q${currentQuestion + 1}`] = answerValue;
-
-            if (currentQuestion === 0 && answerValue === 'no') {
-                createConfetti();
-                setTimeout(() => showLoadingAndRedirect(), 500);
-                return;
-            }
-
-            button.classList.add('selected');
-            const allButtons = document.querySelectorAll(`#answers${currentQuestion} .answer-btn`);
-            allButtons.forEach(btn => btn.classList.add('disabled'));
-
-            setTimeout(() => {
-                if (currentQuestion < 2) {
-                    transitionToNextQuestion();
+        // Additional Quiz Logic (Basic Navigation)
+        document.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(isProcessing) return;
+                
+                const nextQ = currentQuestion + 1;
+                const currentCard = document.getElementById('card' + currentQuestion);
+                const currentAns = document.getElementById('answers' + currentQuestion);
+                
+                if (nextQ < 3) {
+                    currentCard.style.display = 'none';
+                    currentAns.style.display = 'none';
+                    
+                    document.getElementById('card' + nextQ).style.display = 'flex';
+                    document.getElementById('answers' + nextQ).style.display = 'flex';
+                    document.getElementById('progress' + nextQ).classList.add('active');
+                    currentQuestion = nextQ;
                 } else {
-                    createConfetti();
-                    setTimeout(() => showLoadingAndRedirect(), 500);
+                    // Final State
+                    document.getElementById('quizContent').style.display = 'none';
+                    document.getElementById('loadingState').classList.add('active');
+                    isProcessing = true;
+                    
+                    setTimeout(() => {
+                        window.location.href = CONFIG.AFFILIATE_URL;
+                    }, CONFIG.LOADING_DURATION);
                 }
-            }, 500);
-        }
-
-        // ===== TRANSITION LOGIC =====
-        function transitionToNextQuestion() {
-            const currentCard = document.getElementById(`card${currentQuestion}`);
-            const currentAnswers = document.getElementById(`answers${currentQuestion}`);
-            
-            currentCard.classList.add('exit');
-            currentAnswers.style.opacity = '0';
-            currentAnswers.style.transform = 'translateY(20px)';
-
-            setTimeout(() => {
-                document.getElementById(`progress${currentQuestion}`).classList.remove('active');
-                currentQuestion++;
-                document.getElementById(`progress${currentQuestion}`).classList.add('active');
-
-                currentCard.style.display = 'none';
-                currentAnswers.style.display = 'none';
-
-                const nextCard = document.getElementById(`card${currentQuestion}`);
-                const nextAnswers = document.getElementById(`answers${currentQuestion}`);
-                
-                nextCard.style.display = 'flex';
-                nextAnswers.style.display = 'flex';
-                nextCard.classList.remove('exit');
-                
-                nextAnswers.style.opacity = '0';
-                nextAnswers.style.transform = 'translateY(20px)';
-                
-                triggerHaptic('light');
-                
-                setTimeout(() => {
-                    nextAnswers.style.opacity = '1';
-                    nextAnswers.style.transform = 'translateY(0)';
-                }, 50);
-
-                isProcessing = false;
-                attachButtonListeners();
-            }, 400);
-        }
-
-        // ===== REDIRECT LOGIC =====
-        function showLoadingAndRedirect() {
-            document.getElementById('quizContent').style.opacity = '0';
-            document.getElementById('quizContent').style.transform = 'scale(0.95)';
-
-            setTimeout(() => {
-                document.getElementById('quizContent').style.display = 'none';
-                document.getElementById('loadingState').classList.add('active');
-
-                setTimeout(() => {
-                    window.location.href = CONFIG.AFFILIATE_URL;
-                }, CONFIG.LOADING_DURATION);
-            }, 300);
-        }
-
-        // ===== BUTTON LISTENERS =====
-        function attachButtonListeners() {
-            const currentAnswers = document.getElementById(`answers${currentQuestion}`);
-            const buttons = currentAnswers.querySelectorAll('.answer-btn');
-            
-            buttons.forEach(button => {
-                button.removeEventListener('click', buttonClickHandler);
-                button.addEventListener('click', buttonClickHandler);
-                button.addEventListener('touchstart', () => triggerHaptic('light'));
             });
-        }
-
-        function buttonClickHandler(e) {
-            handleAnswer(e.currentTarget);
-        }
-
-        // ===== INITIALIZATION =====
-        window.addEventListener('DOMContentLoaded', function() {
-            if (!checkDeviceType()) {
-                document.getElementById('deviceWarning').classList.add('active');
-            } else {
-                document.getElementById('deviceWarning').classList.remove('active');
-                attachButtonListeners();
-            }
-
-            document.body.style.overflow = 'hidden';
-            document.body.style.overscrollBehavior = 'none';
-        });
-
-        // Prevent pull-to-refresh
-        document.addEventListener('touchmove', function(e) {
-            if (e.touches.length > 1) e.preventDefault();
-        }, { passive: false });
-
-        // Prevent context menu
-        document.addEventListener('contextmenu', function(e) {
-            if (!/input|textarea/i.test(e.target.tagName)) {
-                e.preventDefault();
-            }
         });
     </script>
 </body>
